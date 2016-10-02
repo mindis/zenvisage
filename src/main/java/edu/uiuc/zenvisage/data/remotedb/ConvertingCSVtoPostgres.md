@@ -120,3 +120,13 @@ CREATE TABLE zenvisage_metatable (tablename TEXT,attribute TEXT, type TEXT);
  
  
 SELECT type FROM zenvisage_metatable WHERE tablename = 'real_estate' AND attribute = 'Metro';
+
+drop table zenvisage_metafilelocation;
+
+CREATE TABLE zenvisage_metafilelocation (database TEXT, metafilelocation TEXT);
+
+INSERT INTO zenvisage_metafilelocation (database, metafilelocation)
+VALUES
+('real_estate', 'real_estate.txt'),('cmu', 'cmuwithoutidschema.txt'),('cmutesting', 'cmuwithoutidschema.txt'), ('sales','sales.txt');
+
+

@@ -412,14 +412,16 @@ public class ZvMain {
 //	}
 
 
-	public String getInterfaceFomData(String query) throws IOException, InterruptedException{
+	public String getInterfaceFomData(String query) throws IOException, InterruptedException, SQLException{
 		FormQuery fq = new ObjectMapper().readValue(query,FormQuery.class);
 		this.databaseName = fq.getDatabasename();
 //		inMemoryDatabase = inMemoryDatabases.get(this.databaseName);
 //		executor = new Executor(inMemoryDatabase);
 		
 //		System.out.println( new ObjectMapper().writeValueAsString(inMemoryDatabases.get(fq.getDatabasename()).getFormMetdaData()) );
-		return new ObjectMapper().writeValueAsString(readSchema("/data/real_estate.txt"));
+//		return new ObjectMapper().writeValueAsString(readSchema("/data/real_estate.txt"));
+		return new ObjectMapper().writeValueAsString(readSchema(new SQLQueryExecutor().getMetaFileLocation(databaseName)));
+		
 //		return new ObjectMapper().writeValueAsString(inMemoryDatabases.get(fq.getDatabasename()).getFormMetdaData());
 	}
 	
