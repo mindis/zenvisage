@@ -16,12 +16,12 @@ import org.apache.commons.math3.ml.clustering.DoublePoint;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import edu.uiuc.zenvisage.data.roaringdb.db.Database;
-import edu.uiuc.zenvisage.data.roaringdb.executor.Executor;
 import edu.uiuc.zenvisage.model.ZvQuery;
 import edu.uiuc.zenvisage.service.cluster.Clustering;
 import edu.uiuc.zenvisage.service.cluster.RepresentativeTrend;
 import edu.uiuc.zenvisage.service.distance.Distance;
+import edu.uiuc.zenvisage.data.remotedb.Database;
+import edu.uiuc.zenvisage.data.remotedb.Executor;
 import edu.uiuc.zenvisage.model.*;
 
 

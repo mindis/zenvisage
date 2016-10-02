@@ -20,9 +20,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.BiMap;
 
 import edu.uiuc.zenvisage.data.Query;
-import edu.uiuc.zenvisage.data.roaringdb.db.Database;
-import edu.uiuc.zenvisage.data.roaringdb.executor.Executor;
-import edu.uiuc.zenvisage.data.roaringdb.executor.ExecutorResult;
+import edu.uiuc.zenvisage.data.remotedb.Database;
+import edu.uiuc.zenvisage.data.remotedb.Executor;
 import edu.uiuc.zenvisage.model.Sketch;
 import edu.uiuc.zenvisage.model.ZvQuery;
 import edu.uiuc.zenvisage.service.distance.Distance;

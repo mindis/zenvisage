@@ -8,8 +8,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
-import edu.uiuc.zenvisage.data.roaringdb.db.ColumnMetadata;
-import edu.uiuc.zenvisage.data.roaringdb.db.Database;
+import edu.uiuc.zenvisage.data.remotedb.ColumnMetadata;
+import edu.uiuc.zenvisage.data.remotedb.Database;
 import edu.uiuc.zenvisage.model.Point;
 import edu.uiuc.zenvisage.model.Sketch;
 import edu.uiuc.zenvisage.model.ZvQuery;

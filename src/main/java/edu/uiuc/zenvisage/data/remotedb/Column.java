@@ -14,7 +14,7 @@ public class Column {
 	private IndexedColumnValues indexedColumnValues;
 	private UnIndexedColumnValues unIndexedColumnValues;
 
-	public Column(ColumnMetadata columnMetadata, QueryBasedInMemoryDatabase database){
+	public Column(ColumnMetadata columnMetadata,Database database){
 		this.columnMetadata=columnMetadata;
 		database.getColumns().put(columnMetadata.name, this);
 		if(columnMetadata.isIndexed==true){

@@ -5,12 +5,12 @@ import java.util.LinkedHashMap;
 
 import edu.uiuc.zenvisage.service.utility.*;
 
-import edu.uiuc.zenvisage.data.roaringdb.db.Database;
-import edu.uiuc.zenvisage.data.roaringdb.executor.Executor;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import edu.uiuc.zenvisage.service.distance.*;
+import edu.uiuc.zenvisage.data.remotedb.Database;
+import edu.uiuc.zenvisage.data.remotedb.Executor;
 import edu.uiuc.zenvisage.model.*;
 import edu.uiuc.zenvisage.model.ZvQuery;
 

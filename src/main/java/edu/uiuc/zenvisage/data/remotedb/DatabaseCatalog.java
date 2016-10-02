@@ -4,13 +4,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class DatabaseCatalog {
-	static private Map<String,QueryBasedInMemoryDatabase> databases = new HashMap<String,QueryBasedInMemoryDatabase>();
+	static private Map<String,Database> databases = new HashMap<String,Database>();
 	
-	static public void addDatabase(String name,QueryBasedInMemoryDatabase database){
+	static public void addDatabase(String name,Database database){
 		databases.put(name, database);
 	}
 	
-	static public QueryBasedInMemoryDatabase getDatabase(String name){
+	static public Database getDatabase(String name){
 		return databases.get(name);		
 	}
+	
+
 }

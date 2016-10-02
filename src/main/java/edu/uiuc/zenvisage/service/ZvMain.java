@@ -6,6 +6,8 @@ package edu.uiuc.zenvisage.service;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,10 +30,17 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
 import edu.uiuc.zenvisage.data.Query;
+import edu.uiuc.zenvisage.data.remotedb.ColumnMetadata;
+import edu.uiuc.zenvisage.data.remotedb.Database;
+import edu.uiuc.zenvisage.data.remotedb.DatabaseMetaData;
+import edu.uiuc.zenvisage.data.remotedb.Executor;
+import edu.uiuc.zenvisage.data.remotedb.ExecutorResult;
 import edu.uiuc.zenvisage.data.remotedb.SQLQueryExecutor;
-import edu.uiuc.zenvisage.data.roaringdb.db.Database;
-import edu.uiuc.zenvisage.data.roaringdb.executor.Executor;
-import edu.uiuc.zenvisage.data.roaringdb.executor.ExecutorResult;
+//import edu.uiuc.zenvisage.data.roaringdb.db.Column;
+//import edu.uiuc.zenvisage.data.roaringdb.db.ColumnMetadata;
+//import edu.uiuc.zenvisage.data.roaringdb.db.Database;
+//import edu.uiuc.zenvisage.data.roaringdb.executor.Executor;
+//import edu.uiuc.zenvisage.data.roaringdb.executor.ExecutorResult;
 import edu.uiuc.zenvisage.model.BaselineQuery;
 import edu.uiuc.zenvisage.model.FormQuery;
 import edu.uiuc.zenvisage.model.ScatterPlotQuery;
@@ -63,7 +72,7 @@ public class ZvMain {
 	private Result cachedResult = new Result();
 	private BaselineQuery cachedQuery = new BaselineQuery();
 //	private InMemoryDatabase inMemoryDatabase;
-	private Map<String,Database> inMemoryDatabases = new HashMap<String,Database>();
+//	private Map<String,Database> inMemoryDatabases = new HashMap<String,Database>();
 
 	private Database inMemoryDatabase;
 
@@ -84,28 +93,28 @@ public class ZvMain {
 
 	public  void loadData() throws IOException, InterruptedException{
 
-		inMemoryDatabase = createDatabase("real_estate","/data/real_estate.txt","/data/real_estate.csv");
-		inMemoryDatabases.put("real_estate", inMemoryDatabase);
-
-
-		inMemoryDatabase = createDatabase("cmu", "/data/cmuwithoutidschema.txt", "/data/fullcmuwithoutid.csv");
-		inMemoryDatabases.put("cmu", inMemoryDatabase);
-		
-
-		inMemoryDatabase = createDatabase("cmutesting", "/data/cmuhaha.txt", "/data/cmuhaha.csv");
-		inMemoryDatabases.put("cmutesting", inMemoryDatabase);
-
-		inMemoryDatabase = createDatabase("sales", "/data/sales.txt", "/data/sales.csv");
-		inMemoryDatabases.put("sales", inMemoryDatabase);
-
-		System.out.println("Done loading data");
+//		inMemoryDatabase = createDatabase("real_estate","/data/real_estate.txt","/data/real_estate.csv");
+//		inMemoryDatabases.put("real_estate", inMemoryDatabase);
+//
+//
+//		inMemoryDatabase = createDatabase("cmu", "/data/cmuwithoutidschema.txt", "/data/fullcmuwithoutid.csv");
+//		inMemoryDatabases.put("cmu", inMemoryDatabase);
+//		
+//
+//		inMemoryDatabase = createDatabase("cmutesting", "/data/cmuhaha.txt", "/data/cmuhaha.csv");
+//		inMemoryDatabases.put("cmutesting", inMemoryDatabase);
+//
+//		inMemoryDatabase = createDatabase("sales", "/data/sales.txt", "/data/sales.csv");
+//		inMemoryDatabases.put("sales", inMemoryDatabase);
+//
+//		System.out.println("Done loading data");
 	}
 
-	public static Database createDatabase(String name,String schemafile,String datafile) throws IOException, InterruptedException{
-    	Database database = new Database(name,schemafile,datafile);
-    	return database;
-
-    }
+//	public static Database createDatabase(String name,String schemafile,String datafile) throws IOException, InterruptedException{
+//    	Database database = new Database(name,schemafile,datafile);
+//    	return database;
+//
+//    }
 
 	public void fileUpload(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, InterruptedException {
 		UploadHandleServlet uploadHandler = new UploadHandleServlet();
@@ -113,32 +122,30 @@ public class ZvMain {
 
 		if (names.size() == 3) {
 			System.out.println("successful upload!");
-			inMemoryDatabase = createDatabase(names.get(0),"/data/" + names.get(2),"/data/" + names.get(1));
-			inMemoryDatabases.put(names.get(0), inMemoryDatabase);
+//			inMemoryDatabase = createDatabase(names.get(0),"/data/" + names.get(2),"/data/" + names.get(1));
+//			inMemoryDatabases.put(names.get(0), inMemoryDatabase);
 		}
 	}
 
    public String runZQLCompleteQuery(String zqlQuery) throws IOException, InterruptedException, SQLException{
-		  System.out.println(zqlQuery);
-	   	  inMemoryDatabase = inMemoryDatabases.get("real_estate");
-		  executor = new Executor(inMemoryDatabase);
-		  edu.uiuc.zenvisage.zqlcomplete.executor.ZQLExecutor.executor=executor;
-		  edu.uiuc.zenvisage.zqlcomplete.executor.ZQLTable zqlTable = new ObjectMapper().readValue(zqlQuery, edu.uiuc.zenvisage.zqlcomplete.executor.ZQLTable.class);
-     	  String result=new ObjectMapper().writeValueAsString(edu.uiuc.zenvisage.zqlcomplete.executor.ZQLExecutor.execute(zqlTable));
-     	  System.out.println(result);
-     	  return result;
-//		  return new ObjectMapper().writeValueAsString(ZQLExecutor.execute(ZQLTest.createZQLTable()));
-
+//		  System.out.println(zqlQuery);
+//	   	  inMemoryDatabase = inMemoryDatabases.get("real_estate");
+//		  executor = new Executor(inMemoryDatabase);
+//		  edu.uiuc.zenvisage.zqlcomplete.executor.ZQLExecutor.executor=executor;
+//		  edu.uiuc.zenvisage.zqlcomplete.executor.ZQLTable zqlTable = new ObjectMapper().readValue(zqlQuery, edu.uiuc.zenvisage.zqlcomplete.executor.ZQLTable.class);
+//     	  String result=new ObjectMapper().writeValueAsString(edu.uiuc.zenvisage.zqlcomplete.executor.ZQLExecutor.execute(zqlTable));
+//     	  System.out.println(result);
+//     	  return result;
+	   	  return null;
 		}
 
    public String runZQLQuery(String zqlQuery) throws IOException, InterruptedException{
-		  inMemoryDatabase = inMemoryDatabases.get("real_estate");
-		  executor = new Executor(inMemoryDatabase);
-		  ZQLExecutor.executor=executor;
-		  ZQLTable zqlTable = new ObjectMapper().readValue(zqlQuery,ZQLTable.class);
-		  return new ObjectMapper().writeValueAsString(ZQLExecutor.execute(zqlTable));
-//		  return new ObjectMapper().writeValueAsString(ZQLExecutor.execute(ZQLTest.createZQLTable()));
-
+//		  inMemoryDatabase = inMemoryDatabases.get("real_estate");
+//		  executor = new Executor(inMemoryDatabase);
+//		  ZQLExecutor.executor=executor;
+//		  ZQLTable zqlTable = new ObjectMapper().readValue(zqlQuery,ZQLTable.class);
+//		  return new ObjectMapper().writeValueAsString(ZQLExecutor.execute(zqlTable));
+	   	  return null;
 		}
 
 
@@ -400,20 +407,68 @@ public class ZvMain {
 	}
 
 
-	public String getDatabaseNames() throws JsonGenerationException, JsonMappingException, IOException{
-		return new ObjectMapper().writeValueAsString(inMemoryDatabases.keySet());
-	}
+//	public String getDatabaseNames() throws JsonGenerationException, JsonMappingException, IOException{
+//		return new ObjectMapper().writeValueAsString(inMemoryDatabases.keySet());
+//	}
 
 
-	public String getInterfaceFomData(String query) throws IOException{
+	public String getInterfaceFomData(String query) throws IOException, InterruptedException{
 		FormQuery fq = new ObjectMapper().readValue(query,FormQuery.class);
 		this.databaseName = fq.getDatabasename();
-		inMemoryDatabase = inMemoryDatabases.get(this.databaseName);
-		executor = new Executor(inMemoryDatabase);
+//		inMemoryDatabase = inMemoryDatabases.get(this.databaseName);
+//		executor = new Executor(inMemoryDatabase);
 		
-		System.out.println( new ObjectMapper().writeValueAsString(inMemoryDatabases.get(fq.getDatabasename()).getFormMetdaData()) );
-		
-		return new ObjectMapper().writeValueAsString(inMemoryDatabases.get(fq.getDatabasename()).getFormMetdaData());
+//		System.out.println( new ObjectMapper().writeValueAsString(inMemoryDatabases.get(fq.getDatabasename()).getFormMetdaData()) );
+		return new ObjectMapper().writeValueAsString(readSchema("/data/real_estate.txt"));
+//		return new ObjectMapper().writeValueAsString(inMemoryDatabases.get(fq.getDatabasename()).getFormMetdaData());
+	}
+	
+	
+	private DatabaseMetaData readSchema(String schemafilename) throws IOException, InterruptedException{
+//  	 BufferedReader bufferedReader = new BufferedReader(new FileReader(schemafilename));
+//  	 String in = getClass().getClassLoader().getResource(schemafilename).getPath();
+//    BufferedReader bufferedReader = new BufferedReader(new FileReader(in));
+		DatabaseMetaData databaseMetaData = new DatabaseMetaData();
+		InputStream is = getClass().getResourceAsStream(schemafilename);
+		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(is));
+		String line;
+		 while ((line = bufferedReader.readLine()) != null){
+				 ColumnMetadata columnMetadata= new ColumnMetadata();
+				 String[] sections=line.split(":");
+				 columnMetadata.name=sections[0];
+				 String[] terms=sections[1].split(",");
+				 columnMetadata.isIndexed=true;
+				 columnMetadata.dataType=terms[0];
+				 columnMetadata.columnType=terms[8];
+				 if("indexed".equals(terms[1])){
+					 columnMetadata.isIndexed=true;
+				 }
+				 else{
+					 columnMetadata.isIndexed=false;
+				 }
+	
+			     if(terms[2].equals("T")){
+			    	 databaseMetaData.xAxisColumns.put(columnMetadata.name,columnMetadata);
+			     }
+			     if(terms[3].equals("T")){
+			    	 databaseMetaData.yAxisColumns.put(columnMetadata.name,columnMetadata);
+			     }
+	
+			     if(terms[4].equals("T")){
+			    	 databaseMetaData.zAxisColumns.put(columnMetadata.name,columnMetadata);
+			     }
+	
+			     if(terms[5].equals("T")){
+			    	 databaseMetaData.predicateColumns.put(columnMetadata.name,columnMetadata);
+			     }
+			     if (terms[6].equals("T")) {
+			    	 columnMetadata.unit = terms[7];
+			     }
+	
+			 }
+
+		bufferedReader.close();
+		return databaseMetaData;
 	}
 
 	/**

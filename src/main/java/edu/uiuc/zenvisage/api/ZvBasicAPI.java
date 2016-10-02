@@ -114,7 +114,7 @@ public class ZvBasicAPI {
 
 	@RequestMapping(value = "/getformdata", method = RequestMethod.GET)
 	@ResponseBody
-	public String getformdata( @RequestParam(value="query") String arg) throws JsonGenerationException, JsonMappingException, IOException {
+	public String getformdata( @RequestParam(value="query") String arg) throws JsonGenerationException, JsonMappingException, IOException, InterruptedException {
 		System.out.println(arg);
 		return zvMain.getInterfaceFomData(arg);
 	}
@@ -135,6 +135,7 @@ public class ZvBasicAPI {
 	@ResponseBody
 	public String executeZQL(@RequestParam(value="query") String arg) throws IOException, InterruptedException {
 		return zvMain.runZQLQuery(arg);
+		
 	}
 
 	@RequestMapping(value = "/executeZQLComplete", method = RequestMethod.GET)

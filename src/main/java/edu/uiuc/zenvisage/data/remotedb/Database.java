@@ -1,25 +1,25 @@
 package edu.uiuc.zenvisage.data.remotedb;
 
 import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.roaringbitmap.RoaringBitmap;
-
 import edu.uiuc.zenvisage.data.Query.FilterPredicate;
 
-public class QueryBasedInMemoryDatabase {
+public class Database {
 	private String name;
 	private Map<String,Column> columns= new HashMap<String,Column>();
 	private Map<String,Column> indexedColumns= new HashMap<String,Column>();
 	public DatabaseMetaData databaseMetaData= new DatabaseMetaData();
 	public long rowCount;
 
-	public QueryBasedInMemoryDatabase(String name,String schemafilename,String datafilename) throws IOException, InterruptedException{
+	public Database(String name,String schemafilename,String datafilename) throws IOException, InterruptedException{
 		this.name=name;
 		this.databaseMetaData.dataset = name;
 		readSchema(schemafilename);
@@ -80,8 +80,6 @@ public class QueryBasedInMemoryDatabase {
 		     if (terms[6].equals("T")) {
 		    	 columnMetadata.unit = terms[7];
 		     }
-
-		    Column column = new Column(columnMetadata, this);
 
 		 }
 
@@ -179,4 +177,6 @@ public class QueryBasedInMemoryDatabase {
      public DatabaseMetaData getFormMetdaData(){
 	  return databaseMetaData;
       }
+
+
 }
