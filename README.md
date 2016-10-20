@@ -18,15 +18,47 @@ For more details, please look at our [Project Webpage] (http://zenvisage.github.
 
 * Install Postgresql database
 
+* (https://github.com/zenvisage/zenvisage/blob/feature/QueryGraph/src/main/java/edu/uiuc/zenvisage/data/remotedb/readme.md)
 
 
 ## Building Code and Deployment
 
 *  git clone https://github.com/zenvisage/zenvisage.git
 *  cd zenvisage
-*  sh build.sh  
+*  sh build.sh 
+
+## Install Postgres
+(1) Download Postgres server on your local machine;
+
+(2) Postgres server must contain a user with:
+
+username:postgres
+password:(not listed here, you know what it is for our server)
+
+(3) Run clean up query and setup query:
+
+DROP schema public cascade;
+CREATE schema public;
+CREATE TABLE zenvisage_metatable (tablename TEXT,attribute TEXT, type TEXT);
+CREATE TABLE zenvisage_metafilelocation (database TEXT, metafilelocation TEXT, csvfilelocation TEXT);
+
+## Deploy code
 *  sh run.sh
 *  http://localhost:8080/
+*  Launch http://localhost:8080/chi-index.html
+
+## Upload files
+( Be aware that column names of csv&&txt table can not contain '-' 
+(e.g.Foreclosures-Ratio, should be ForeclosuresRatio);
+Upload (csv, txt) tuples (e.g. real_estate.csv, real_estate.txt) using the front-end file upload functionality;
+The file upload back-end will auto creat csv table, insert metafilelocation table && metatable;
+
+Now you can select the dataset from dropdown on front-end plotting and similarity search;
+
+
+
+
+
 
 
 # Architecture
