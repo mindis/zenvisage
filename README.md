@@ -16,6 +16,10 @@ For more details, please look at our [Project Webpage] (http://zenvisage.github.
 
 * Install [eclipse J2EE] (http://www.eclipse.org/downloads/packages/eclipse-ide-java-ee-developers/mars2) (Optional: for development) 
 
+* Install Postgresql database
+
+
+
 ## Building Code and Deployment
 
 *  git clone https://github.com/zenvisage/zenvisage.git
