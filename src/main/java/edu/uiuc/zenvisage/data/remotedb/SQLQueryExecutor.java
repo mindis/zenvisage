@@ -162,9 +162,9 @@ public class SQLQueryExecutor {
 		while (rs.next())
 		{
 			if(zType == null) zType = getMetaType(zqlRow.getZ().getColumn(), databaseName);
-			if(xType == null) xType = getMetaType(zqlRow.getX().getVariable(), databaseName);
-			if(yType == null) yType = getMetaType(zqlRow.getY().getVariable(), databaseName);
-			
+			//TODO: supports only 1 column value
+			if(xType == null) xType = getMetaType(zqlRow.getX().getValues().get(0), databaseName);
+			if(yType == null) yType = getMetaType(zqlRow.getY().getValues().get(0), databaseName);
 			WrapperType tempZValue = new WrapperType(rs.getString(1), zType);
 
 			if(tempZValue.equals(zValue)){
