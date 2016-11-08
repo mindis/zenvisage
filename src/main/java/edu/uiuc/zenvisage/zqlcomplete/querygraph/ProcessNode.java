@@ -50,7 +50,6 @@ public class ProcessNode extends QueryNode {
 		}
 		
 		this.state = State.RUNNING;
-		
 		AxisVariableScores axisVariableScores = executeProcess();
 
 		// mock 
@@ -58,9 +57,12 @@ public class ProcessNode extends QueryNode {
 	
 	public AxisVariableScores executeProcess() {
 		AxisVariableScores axisVariableScores = null;
-		
+		System.out.println(process.getMethod());
 		// TODO: handle different types of D, T, and R
-		if (process.getMethod().equals("D")) {
+		
+		// TODO: Handling "dissimilar" as method input for now
+		// probably should be parsed to D?
+		if (process.getMethod().toLowerCase().equals("similar") || process.getMethod().toLowerCase().equals("dissimilar") || process.getMethod().equals("D")) {
 			axisVariableScores = executeDMethod();
 		}
 		if (process.getMethod().equals("T")) {
@@ -74,12 +76,18 @@ public class ProcessNode extends QueryNode {
 		}
 		
 		axisVariableScores = filterScores(axisVariableScores);
-		
+		System.out.println("Process information:");
+		System.out.println(process.getVariables());
+		System.out.println(process.getArguments());
 		// Every variable of a process statement should have a corresponding list of variables in axisVariableScores
 		for (int i = 0; i < process.getVariables().size(); i++) {
 			String varName = process.getVariables().get(i);
-			List<String> values = axisVariableScores.getAxisvars().get(i);
-			AxisVariable axisVar = new AxisVariable(varName, values);
+			// get the axivariable in the z column, 
+			
+		    List<String> values = axisVariableScores.getAxisvars().get(i);
+		    
+		    //TODO fix state to actual axis variable
+			AxisVariable axisVar = new AxisVariable("state", values);
 			lookuptable.put(varName, axisVar);
 		}
 		return axisVariableScores;
@@ -93,12 +101,14 @@ public class ProcessNode extends QueryNode {
 			// TODO Just returning for now
 			return null;
 		}
+		
 		String name1 = process.getArguments().get(0);
 		String name2 = process.getArguments().get(1);
 		// Basic user error checking
 		if(name1.equals("") || name2.equals("")){
 			return null;
 		}
+		
 		Object object1 = lookuptable.get(name1);
 		if (! (object1 instanceof VisualComponentList)) {
 			return null;
@@ -107,11 +117,15 @@ public class ProcessNode extends QueryNode {
 		if (! (object2 instanceof VisualComponentList)) {
 			return null;
 		}
+		
 		VisualComponentList f1 = (VisualComponentList) object1;
 		VisualComponentList f2 = (VisualComponentList) object2;
 		
 		// axis: eg v1
-		return d.execute(f1, f2, process.getAxis());		
+		System.out.println(process.getAxis());
+		List<String> something = new ArrayList<String>();
+		something.add("something");
+		return d.execute(f1, f2, something);		
 	}
 	
 	private AxisVariableScores executeTMethod() {
@@ -144,12 +158,12 @@ public class ProcessNode extends QueryNode {
 		
 	}
 	private AxisVariableScores filterScores(AxisVariableScores axisVariableScores) {
-		if (process.getMetric().equals("argmax")) {
+		if (process.getMethod().toLowerCase().equals("dissimilar") || process.getMetric().equals("argmax")) {
 			ArgMaxSortFilterPrimitive argmaxFilter = new ArgMaxSortFilterPrimitive();
 			// TODO: count is stored as? "10"? "k=10"?
 			axisVariableScores = argmaxFilter.execute(axisVariableScores, Integer.parseInt(process.getCount()));
 		}
-		if (process.getMetric().equals("argmin")) {
+		if (process.getMethod().toLowerCase().equals("similar") || process.getMetric().equals("argmin")) {
 			ArgMinSortFilterPrimitive argminFilter = new ArgMinSortFilterPrimitive();
 			axisVariableScores = argminFilter.execute(axisVariableScores, Integer.parseInt(process.getCount()));
 		}

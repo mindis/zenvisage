@@ -10,6 +10,7 @@ import java.util.List;
 import edu.uiuc.zenvisage.data.remotedb.VisualComponent;
 import edu.uiuc.zenvisage.data.remotedb.VisualComponentList;
 import edu.uiuc.zenvisage.data.remotedb.WrapperType;
+import edu.uiuc.zenvisage.zqlcomplete.querygraph.DDTW.VCComparator;
 
 /**
  * @author tarique
@@ -84,6 +85,7 @@ public class DEuclidean implements D {
 			return v1.getZValue().getStrValue().compareToIgnoreCase(v2.getZValue().getStrValue());
 		}
 	}
+	
 	
 	public double calculateDistance(VisualComponent v1, VisualComponent v2) {
 		ArrayList<WrapperType> y1 = v1.getPoints().getYList();

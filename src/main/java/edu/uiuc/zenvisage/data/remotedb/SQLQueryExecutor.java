@@ -116,7 +116,7 @@ public class SQLQueryExecutor {
 				yList = new ArrayList<WrapperType>();
 				xList.add(new WrapperType(rs.getString(2)));
 				yList.add(new WrapperType(rs.getString(3)));
-				tempVisualComponent = new VisualComponent(zValue, new Points(xList, yList));
+				tempVisualComponent = new VisualComponent(zValue, new Points(xList, yList), X, Y);
 				this.visualComponentList.addVisualComponent(tempVisualComponent);
 			}
 
@@ -128,44 +128,52 @@ public class SQLQueryExecutor {
 		st.close();
 	}
 	
+	/*This is the main ZQL->SQLExcecution query*/
 	public void ZQLQueryEnhanced(ZQLRow zqlRow, String databaseName) throws SQLException{
-		Statement st = c.createStatement();
+		
 		String sql = null;
 		
 		databaseName = databaseName.toLowerCase();
-		String z = zqlRow.getZ().getColumn().toLowerCase().replaceAll("'", "").replaceAll("\"", "");
-//		String x = zqlRow.getX().getVariable().toLowerCase().replaceAll("'", "").replaceAll("\"", "");
-		String x = zqlRow.getX().getValues().get(0).toLowerCase().replaceAll("'", "").replaceAll("\"", "");
+		String z = zqlRow.getZ().getAttribute().toLowerCase().replaceAll("'", "").replaceAll("\"", "");
 		String agg = zqlRow.getViz().getVariable().toLowerCase().replaceAll("'", "").replaceAll("\"", "");
-//		String y = zqlRow.getY().getVariable().toLowerCase().replaceAll("'", "").replaceAll("\"", "");
-		String y = zqlRow.getY().getValues().get(0).toLowerCase().replaceAll("'", "").replaceAll("\"", "");
 		
-		//zqlRow.getConstraint() has replaced the whereCondiditon
-		if (zqlRow.getConstraint() == null || zqlRow.getConstraint().size() == 0) {
-/*<<<<<<< 73307f7cc0c1baf67332fa0e6cb799b7e4e70391
-			sql = "SELECT " + zqlRow.getZ().getColumn() + "," + zqlRow.getX().getValues().get(0) + " ," + zqlRow.getViz().getVariable() + "(" + zqlRow.getY().getValues().get(0) + ")" //zqlRow.getViz() should replace the avg() function
+		
+		//support list of x, y values, general all possible x,y combinations, generate sql
+		int xLen = zqlRow.getX().getAttributes().size();
+		int yLen = zqlRow.getY().getAttributes().size();
+		for(int i = 0; i < xLen; i++){
+			for(int j = 0; j < yLen; j++){
+				String x = zqlRow.getX().getAttributes().get(i).toLowerCase().replaceAll("'", "").replaceAll("\"", "");
+				String y = zqlRow.getY().getAttributes().get(j).toLowerCase().replaceAll("'", "").replaceAll("\"", "");
+				
+				//zqlRow.getConstraint() has replaced the whereCondiditon
+				if (zqlRow.getConstraint() == null || zqlRow.getConstraint().size() == 0) {
+					sql = "SELECT " + z + "," + x + " ," + agg + "(" + y + ")" //zqlRow.getViz() should replace the avg() function
+							+ " FROM " + databaseName
+							+ " GROUP BY " + z + ", "+ x
+							+ " ORDER BY " + z + ", "+ x;
+				} else {
+					
+					sql = "SELECT " + z+ "," + x + " ," + agg + "(" + y + ")"
 					+ " FROM " + databaseName
-					+ " GROUP BY " + zqlRow.getZ().getColumn() + ", "+ zqlRow.getX().getValues().get(0)
-					+ " ORDER BY " + zqlRow.getZ().getColumn() + ", "+ zqlRow.getX().getValues().get(0);
-=======*/
-			sql = "SELECT " + z + "," + x + " ," + agg + "(" + y + ")" //zqlRow.getViz() should replace the avg() function
-					+ " FROM " + databaseName
+					+ " WHERE " + appendConstraints(zqlRow.getConstraint()) //zqlRow.getConstraint() has replaced the whereCondiditon
 					+ " GROUP BY " + z + ", "+ x
 					+ " ORDER BY " + z + ", "+ x;
-/*=======
-			sql = "SELECT " + zqlRow.getZ().getColumn() + "," + zqlRow.getX().getValues().get(0) + " ," + zqlRow.getViz().getVariable() + "(" + zqlRow.getY().getValues().get(0) + ")" //zqlRow.getViz() should replace the avg() function
-					+ " FROM " + databaseName
-					+ " GROUP BY " + zqlRow.getZ().getColumn() + ", "+ zqlRow.getX().getValues().get(0)
-					+ " ORDER BY " + zqlRow.getZ().getColumn() + ", "+ zqlRow.getX().getValues().get(0);
->>>>>>> Updating ZvMain to handle QueryGraph. Making some basic changed to SQLQueryExecutor (should be grabbing value instead of variable)*/
-		} else {
-			sql = "SELECT " + z+ "," + x + " ," + agg + "(" + y + ")"
-			+ " FROM " + databaseName
-			+ " WHERE " + zqlRow.getConstraint().get(0) //zqlRow.getConstraint() has replaced the whereCondiditon
-			+ " GROUP BY " + z + ", "+ x
-			+ " ORDER BY " + z + ", "+ x;
+				}
+			
+				System.out.println("Running ZQL Query :"+sql);
+				//excecute sql and put into VisualComponentList
+				executeSQL(sql, zqlRow, databaseName, i, j, x, y);
+			}
 		}
-		System.out.println("Running ZQL Query :"+sql);
+
+
+		/* Testing below */
+        System.out.println("Printing Visual Groups:\n" + this.visualComponentList.toString());
+	}
+	
+	public void executeSQL(String sql, ZQLRow zqlRow, String databaseName, int i, int j, String x, String y) throws SQLException{
+		Statement st = c.createStatement();
 		ResultSet rs = st.executeQuery(sql);
 		
 		
@@ -180,15 +188,9 @@ public class SQLQueryExecutor {
 		String zType = null, xType = null, yType = null;
 		while (rs.next())
 		{
-/*
-			if(zType == null) zType = getMetaType(zqlRow.getZ().getColumn().toLowerCase(), databaseName);
-			if(xType == null) xType = getMetaType(zqlRow.getX().getVariable().toLowerCase(), databaseName);
-			if(yType == null) yType = getMetaType(zqlRow.getY().getVariable().toLowerCase(), databaseName);
-*/			
-			if(zType == null) zType = getMetaType(zqlRow.getZ().getColumn().toLowerCase(), databaseName);
-			//TODO: supports only 1 column value
-			if(xType == null) xType = getMetaType(zqlRow.getX().getValues().get(0).toLowerCase(), databaseName);
-			if(yType == null) yType = getMetaType(zqlRow.getY().getValues().get(0).toLowerCase(), databaseName);
+			if(zType == null) zType = getMetaType(zqlRow.getZ().getAttribute().toLowerCase(), databaseName);
+			if(xType == null) xType = getMetaType(zqlRow.getX().getAttributes().get(i).toLowerCase(), databaseName);
+			if(yType == null) yType = getMetaType(zqlRow.getY().getAttributes().get(j).toLowerCase(), databaseName);
 
 			WrapperType tempZValue = new WrapperType(rs.getString(1), zType);
 
@@ -201,18 +203,37 @@ public class SQLQueryExecutor {
 				yList = new ArrayList<WrapperType>();
 				xList.add(new WrapperType(rs.getString(2), xType));
 				yList.add(new WrapperType(rs.getString(3), yType));
-				tempVisualComponent = new VisualComponent(zValue, new Points(xList, yList));
+				tempVisualComponent = new VisualComponent(zValue, new Points(xList, yList), x, y);
 				this.visualComponentList.addVisualComponent(tempVisualComponent);
 			}
 
 		}
-
-		/* Testing below */
-        //System.out.println("Printing Visual Groups:\n" + this.visualComponentList.toString());
 		rs.close();
 		st.close();
 	}
 	
+	
+	
+	/**
+	 * @param constraint
+	 * @return
+	 */
+	private String appendConstraints(List<Constraints> constraints) {
+		// TODO Auto-generated method stub
+		String appendedConstraints = "";
+		boolean flag=false;
+		for(Constraints constraint: constraints){
+			if(flag){
+				appendedConstraints+=" AND ";
+				flag=true;
+			}
+			appendedConstraints+=constraint.toString();
+		}
+		appendedConstraints+=" ";
+		
+		return appendedConstraints;
+	}
+
 	public String getMetaType(String variable, String table) throws SQLException{
 		Statement st = c.createStatement();
 		String sql = null;
@@ -313,7 +334,10 @@ public class SQLQueryExecutor {
 	                " SALARY         REAL)");
 		}
 		List<Constraints> constraints = new ArrayList<Constraints>();
-		ZQLRow zqlRow = new ZQLRow(new XColumn("Quarter"), new YColumn("SoldPrice"), new ZColumn("State"), constraints, new VizColumn("avg"));
+		List<String> xList = new ArrayList<String>();
+		xList.add("quarter");xList.add("year");
+		//ZQLRow zqlRow = new ZQLRow(new XColumn("Quarter"), new YColumn("SoldPrice"), new ZColumn("State"), constraints, new VizColumn("avg"));
+		ZQLRow zqlRow = new ZQLRow(new XColumn(xList), new YColumn("soldprice"), new ZColumn("state"), constraints, new VizColumn("avg"));
 		sqlQueryExecutor.ZQLQueryEnhanced(zqlRow, "real_estate");
 	}
 
