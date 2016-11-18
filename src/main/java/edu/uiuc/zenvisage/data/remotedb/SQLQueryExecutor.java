@@ -224,7 +224,7 @@ public class SQLQueryExecutor {
 		boolean flag=false;
 		for(Constraints constraint: constraints){
 			if(flag){
-				appendedConstraints+=" OR "; // TODO: Support OR AND AND constraints
+				appendedConstraints+=" AND ";
 			}
 			appendedConstraints+=constraint.toString();
 			flag=true;
